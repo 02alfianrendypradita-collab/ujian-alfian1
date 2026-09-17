@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Users JSON</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #111;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* HEADER */
+        .header {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px 25px;
+            margin-bottom: 20px;
+            border-left: 6px solid #d90429;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .header h2 {
+            margin: 0;
+            color: #111;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 9px 15px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .btn-add {
+            background: #d90429;
+            color: #fff;
+            padding: 11px 18px;
+            box-shadow: 0 3px 8px rgba(217, 4, 41, 0.3);
+        }
+
+        #info {
+            background: #fff;
+            padding: 9px 14px;
+            border-radius: 7px;
+            color: #555;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* TABLE WRAPPER */
+        .table-container {
+            background: #fff;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        table {
+            width: 100%;
+            min-width: 1100px;
+            border-collapse: collapse;
+        }
+
+        /* TABLE HEADER */
+        th {
+            background: #d90429;
+            color: #fff;
+            padding: 15px 12px;
+            border: 1px solid #b80322;
+            font-size: 13px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* TABLE BODY */
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 13px;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f7f7f7;
+        }
+
+        tbody tr:hover {
+            background: #ffe8ec;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        /* ID */
+        td:first-child {
+            font-weight: 700;
+            color: #d90429;
+        }
+
+        /* BUTTON EDIT */
+        .btn-edit {
+            background: #111;
+            color: #fff;
+            margin-right: 4px;
+        }
+
+        /* BUTTON DELETE */
+        .btn-del {
+            background: #d90429;
+            color: #fff;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            font-weight: 600;
+            color: #d90429;
+            padding: 25px;
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 9px 14px;
+            border: 1px solid #d90429;
+            background: #fff;
+            color: #d90429;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #d90429;
+            color: #fff;
+        }
+
+        .pagination button.active {
+            background: #d90429;
+            color: #fff;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .pagination .info {
+            color: #fff;
+            font-size: 13px;
+            margin-left: 5px;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header h2 {
+                font-size: 21px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h2>Data Users dari JSON API</h2>
+        <p>Manajemen data pengguna melalui JSON API</p>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+
+        <button class="btn btn-add" onclick="tambahData()">
+            + Tambah Data
+        </button>
+
+        <span id="info">
+            Memuat data...
+        </span>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th width="70">NO</th>
+                    <th>NAMA</th>
+                    <th>NISN</th>
+                    <th>TTL</th>
+                    <th>GENDER</th>
+                    <th>EMAIL</th>
+                    <th>ALAMAT</th>
+                    <th width="150">AKSI</th>
+                </tr>
+            </thead>
+
+            <tbody id="hasil">
+
+                <tr>
+                    <td colspan="8" class="loading">
+                        Memuat data...
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" id="pagination"></div>
+
+    <div class="footer">
+        Data Users JSON API
+    </div>
+
+</div>
+
+
+<script>
+
+const API = "http://localhost/ujian_asts/";
+const LIMIT = 10;
+
+let currentPage = 1;
+
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+function loadData(page = 1) {
+
+    currentPage = page;
+
+    fetch(`${API}data_json.php?page=${page}&limit=${LIMIT}`)
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Gagal mengambil data");
+            }
+
+            return response.json();
+
+        })
+
+        .then(res => {
+
+            const data = res.data;
+
+            let html = "";
+
+
+            /* TIDAK ADA DATA */
+
+            if (data.length === 0) {
+
+                html = `
+                    <tr>
+                        <td colspan="8" class="center">
+                            Tidak ada data.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+            /* ADA DATA */
+
+            else {
+
+                data.forEach((item, index) => {
+
+                    /*
+                    Nomor urut berdasarkan halaman
+
+                    Halaman 1 = 1 - 10
+                    Halaman 2 = 11 - 20
+                    Halaman 3 = 21 - 30
+                    */
+
+                    const nomor =
+                        ((currentPage - 1) * LIMIT)
+                        + index + 1;
+
+
+                    html += `
+
+                        <tr>
+
+                            <td class="center">
+                                ${nomor}
+                            </td>
+
+                            <td>
+                                ${item.name ?? ''}
+                            </td>
+
+                            <td>
+                                ${item.nis ?? item.nisn ?? ''}
+                            </td>
+
+                            <td>
+                                ${item.ttl ?? ''}
+                            </td>
+
+                            <td>
+                                ${item.gender ?? ''}
+                            </td>
+
+                            <td>
+                                ${item.email ?? ''}
+                            </td>
+
+                            <td>
+                                ${item.address ?? ''}
+                            </td>
+
+                            <td class="center">
+
+                                <button
+                                    class="btn btn-edit"
+                                    onclick="editData(${item.id})">
+                                    Edit
+                                </button>
+
+                                <button
+                                    class="btn btn-del"
+                                    onclick="hapusData(${item.id})">
+                                    Hapus
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                });
+
+            }
+
+
+            document.getElementById("hasil").innerHTML = html;
+
+
+            /* INFO DATA */
+
+            document.getElementById("info").innerText =
+                `Total: ${res.total} data | Halaman ${res.page} dari ${res.totalPages}`;
+
+
+            /* PAGINATION */
+
+            renderPagination(
+                res.page,
+                res.totalPages
+            );
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById("hasil").innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        style="
+                            color:#d90429;
+                            text-align:center;
+                            padding:25px;
+                        "
+                    >
+
+                        Gagal mengambil data JSON.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+}
+
+
+/* =====================================================
+   PAGINATION
+===================================================== */
+
+function renderPagination(page, totalPages) {
+
+    const el =
+        document.getElementById("pagination");
+
+    el.innerHTML = "";
+
+
+    if (totalPages <= 1) {
+        return;
+    }
+
+
+    /* PREV */
+
+    const prev =
+        document.createElement("button");
+
+    prev.innerText = "« Prev";
+
+    prev.disabled = page <= 1;
+
+    prev.onclick = () =>
+        loadData(page - 1);
+
+    el.appendChild(prev);
+
+
+    /* NOMOR HALAMAN */
+
+    for (
+        let i = 1;
+        i <= totalPages;
+        i++
+    ) {
+
+        const btn =
+            document.createElement("button");
+
+        btn.innerText = i;
+
+        if (i === page) {
+
+            btn.classList.add("active");
+
+        }
+
+        btn.onclick = () =>
+            loadData(i);
+
+        el.appendChild(btn);
+
+    }
+
+
+    /* NEXT */
+
+    const next =
+        document.createElement("button");
+
+    next.innerText = "Next »";
+
+    next.disabled =
+        page >= totalPages;
+
+    next.onclick = () =>
+        loadData(page + 1);
+
+    el.appendChild(next);
+
+
+    /* INFO */
+
+    const info =
+        document.createElement("span");
+
+    info.className = "info";
+
+    info.innerText =
+        `(${page}/${totalPages})`;
+
+    el.appendChild(info);
+
+}
+
+
+/* =====================================================
+   TAMBAH DATA
+===================================================== */
+
+function tambahData() {
+
+    const name =
+        prompt("Nama:");
+
+    if (!name) return;
+
+
+    const nisn =
+        prompt("NISN:");
+
+    const ttl =
+        prompt("TTL:");
+
+    const gender =
+        prompt("Gender (MALE/FEMALE):");
+
+    const email =
+        prompt("Email:");
+
+    const address =
+        prompt("Alamat:");
+
+
+    fetch(API + "tambah.php", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type":
+                "application/json"
+        },
+
+        body: JSON.stringify({
+
+            name: name,
+            nisn: nisn,
+            ttl: ttl,
+            gender: gender,
+            email: email,
+            address: address
+
+        })
+
+    })
+
+    .then(response =>
+        response.json()
+    )
+
+    .then(result => {
+
+        if (result.status === "ok") {
+
+            alert("Data berhasil ditambahkan!");
+
+            // Setelah berhasil, tampilkan halaman terakhir
+            fetch(`${API}data_json.php?page=1&limit=${LIMIT}`)
+                .then(response => response.json())
+                .then(dataTerbaru => {
+                    const lastPage = Math.max(
+                        1,
+                        Number(dataTerbaru.totalPages) || 1
+                    );
+                    loadData(lastPage);
+                })
+                .catch(() => loadData(currentPage));
+
+        } else {
+
+            alert(
+                "Gagal menambahkan data: "
+                + (result.pesan || "Periksa koneksi database.")
+            );
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Terjadi kesalahan saat menambahkan data."
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   EDIT DATA
+===================================================== */
+
+function editData(id) {
+
+    fetch(
+        API + "get_one.php?id=" + id
+    )
+
+    .then(response =>
+        response.json()
+    )
+
+    .then(d => {
+
+        const name =
+            prompt("Nama:", d.name);
+
+        if (name === null) return;
+
+
+        const nisn =
+            prompt("NISN:", d.nis);
+
+
+        const ttl =
+            prompt("TTL:", d.ttl);
+
+
+        const gender =
+            prompt("Gender:", d.gender);
+
+
+        const email =
+            prompt("Email:", d.email);
+
+
+        const address =
+            prompt("Alamat:", d.address);
+
+
+        fetch(API + "edit.php", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+
+                id: id,
+                name: name,
+                nisn: nisn,
+                ttl: ttl,
+                gender: gender,
+                email: email,
+                address: address
+
+            })
+
+        })
+
+        .then(response =>
+            response.json()
+        )
+
+        .then(result => {
+
+            if (result.status === "ok") {
+
+                alert("Data berhasil diubah!");
+
+                loadData(currentPage);
+
+            }
+
+            else {
+
+                alert(
+                    "Gagal mengubah data: "
+                    + (result.pesan || "Periksa koneksi database.")
+                );
+
+            }
+
+        });
+
+    });
+
+}
+
+
+/* =====================================================
+   HAPUS DATA
+===================================================== */
+
+function hapusData(id) {
+
+    if (
+        !confirm(
+            "Yakin hapus data ID "
+            + id
+            + "?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    fetch(
+        API + "hapus.php?id=" + id,
+        {
+            method: "POST"
+        }
+    )
+
+    .then(response =>
+        response.json()
+    )
+
+    .then(result => {
+
+        if (result.status === "ok") {
+
+            alert("Data berhasil dihapus!");
+
+            loadData(currentPage);
+
+        }
+
+        else {
+
+            alert(
+                "Gagal menghapus data."
+            );
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadData(1);
+
+</script>
+
+</body>
+</html>
